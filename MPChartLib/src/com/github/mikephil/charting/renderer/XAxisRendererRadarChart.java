@@ -39,18 +39,24 @@ public class XAxisRendererRadarChart extends XAxisRenderer {
         float factor = mChart.getFactor();
 
         PointF center = mChart.getCenterOffsets();
-
+	Rect bounds = new Rect();
         int mod = mXAxis.mAxisLabelModulus;
         for (int i = 0; i < mXAxis.getValues().size(); i += mod) {
             String label = mXAxis.getValues().get(i);
+	    String[] lines = label.split("\n");
 
             float angle = (sliceangle * i + mChart.getRotationAngle()) % 360f;
 
             PointF p = Utils.getPosition(center, mChart.getYRange() * factor
                     + mXAxis.mLabelRotatedWidth / 2f, angle);
 
-            drawLabel(c, label, i, p.x, p.y - mXAxis.mLabelRotatedHeight / 2.f,
-                    drawLabelAnchor, labelRotationAngleDegrees);
+            int yoff = 0;
+            for (int n = 0; n < lines.length; n++) {
+                drawLabel(c, lines[n], i, p.x, p.y - mXAxis.mLabelRotatedHeight / 2.f + yoff,
+                        drawLabelAnchor, labelRotationAngleDegrees);
+                mAxisLabelPaint.getTextBounds(lines[n], 0, lines[n].length(), bounds);
+                yoff += bounds.height();
+            }
         }
     }
 
